@@ -1,4 +1,14 @@
-# Symfony Docker
+# Prueba técnica Symfony
+
+## Requisitos
+Migración de la prueba realizada en este repositorio [prueba-tecnica-laravel](https://github.com/albertocaste/prueba-tecnica-laravel) de **Laravel** a **Symfony**.
+
+## Análisis
+La explicación de la arquitectura seguida y las decisiones tomadas esta descrita en la [prueba-tecnica-laravel](https://github.com/albertocaste/prueba-tecnica-laravel).
+
+# Documentation
+
+## Symfony Docker
 
 A [Docker](https://www.docker.com/)-based installer and runtime for the [Symfony](https://symfony.com) web framework,
 with [FrankenPHP](https://frankenphp.dev) and [Caddy](https://caddyserver.com/) inside!
