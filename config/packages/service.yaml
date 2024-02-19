@@ -1,0 +1,5 @@
+
+services:
+    App\EventSubscriber\ParenthesesProblemAuthorizationListener:
+        tags:
+            - { name: 'kernel.event_subscriber' }

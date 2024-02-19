@@ -29,19 +29,21 @@ class TokenAuthenticator extends AbstractAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $apiToken = $request->headers->get('Authorization');
-        dd($apiToken);
+        $authorization = $request->headers->get('Authorization');
+        $apiToken = substr($authorization, 7);
         if (null === $apiToken) {
-            // The token header was empty, authentication fails with HTTP Status
-            // Code 401 "Unauthorized"
-            throw new CustomUserMessageAuthenticationException('No API token provided');
+            throw new CustomUserMessageAuthenticationException('No API Authorization token provided');
+        }
+
+        if (!$this->areBracketsBalanced($apiToken)) {
+            throw new CustomUserMessageAuthenticationException('Invalid API Authorization token');
         }
 
         // implement your own logic to get the user identifier from `$apiToken`
         // e.g. by looking up a user in the database using its API key
         $userIdentifier = ''/** ... */;
 
-        return new SelfValidatingPassport(new UserBadge($userIdentifier));
+        return new SelfValidatingPassport(new UserBadge('user'));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
@@ -62,4 +64,43 @@ class TokenAuthenticator extends AbstractAuthenticator
 
         return new JsonResponse($data, Response::HTTP_UNAUTHORIZED);
     }
+
+    /**
+     * Check if brackets are correct balanced
+     *
+     * @param string $token Bearer token
+     * @return bool
+     */
+    public function areBracketsBalanced(string $token) : bool
+    {
+		$stack = [];
+        for ($i=0; $i < strlen($token); $i++) {
+            $x = $token[$i];
+            if (in_array($x, ['(', '[', '{'])) {
+                $stack[] = $x;
+                continue;
+            }
+            if (empty($stack)|| !in_array($x, ['(', '[', '{', '}',']',')'])) {
+                return false;
+            }
+            switch ($x) {
+                case ')':
+                    if (in_array(array_pop($stack), ['{', '['])) {
+                        return false;
+                    }
+                    break;
+                case '}':
+                    if (in_array(array_pop($stack), ['(', '['])) {
+                        return false;
+                    }
+                    break;
+                case ']':
+                    if (in_array(array_pop($stack), ['(', '{'])) {
+                        return false;
+                    }
+                    break;
+            }
+        }
+        return empty($stack);
+	}
 }
